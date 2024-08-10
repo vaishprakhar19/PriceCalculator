@@ -65,52 +65,51 @@
 
             if (!isNaN(userInput)) {
                 // Multiply by 1.7
-                let price = parseFloat(userInput) * 1.7;
+                let price = parseFloat(userInput) * 1.8;
                 let roundedPrice = Math.round(price / 10) * 10;
-                console.log('Price (multiplied by 1.7):', roundedPrice);
+                console.log('Price (multiplied by 1.8):', roundedPrice);
                 document.getElementById('result1').textContent = `Price: ${roundedPrice.toFixed(2)}`; // Displaying rounded result with 2 decimal places
 
                 // Multiply by 2
-                let rawMarginVal = parseFloat(userInput) + parseFloat(userInput / 3);
+                let rawMarginVal = parseFloat(userInput) * 1.4;
                 let result2 = ""; // Placeholder for result2
                 let marginVal = (Math.round(rawMarginVal / 10) * 10).toString();
                 console.log('Raw Margin Value:', rawMarginVal);
                 console.log('Margin Value:', marginVal);
-                if (marginVal.charAt(0) === marginVal.charAt(1) || marginVal.charAt(1) === marginVal.charAt(2))
-                    {
-                        temp = parseFloat(marginVal) + 10;
-                        marginVal=temp.toString();
-                        console.log('Changed Margin Value:', marginVal);
-                    }
-
-                    if (marginVal.length == 4) {
-                        if (marginVal.includes('1')) {
-                            result2 = '2' + marginVal.charAt(2) + marginVal.charAt(1) + marginVal.charAt(0);
-                        }
-                        else {
-                            result2 = '1' + marginVal.charAt(2) + marginVal.charAt(1) + marginVal.charAt(0);
-                        }
-
-                    }
-
-                    if (marginVal.length == 3) {
-                        if (marginVal.includes('1')) {
-                            result2 = '2' + marginVal.charAt(1) + marginVal.charAt(0) + '0';
-                        }
-
-                        else {
-                            result2 = '1' + marginVal.charAt(1) + marginVal.charAt(0) + '0';
-                        }
-
-                    }
-
-                    console.log('Result 2 Code:', result2);
-                    document.getElementById('result2').textContent = `Code: ${roundedPrice}${result2}`;
-                } else {
-                    document.getElementById('result1').textContent = "Please enter a valid number.";
-                    document.getElementById('result2').textContent = "";
+                if (marginVal.charAt(0) === marginVal.charAt(1) || marginVal.charAt(1) === marginVal.charAt(2)) {
+                    temp = parseFloat(marginVal) + 10;
+                    marginVal = temp.toString();
+                    console.log('Changed Margin Value:', marginVal);
                 }
-            });
+
+                if (marginVal.length == 4) {
+                    if (marginVal.includes('1')) {
+                        result2 = '2' + marginVal.charAt(2) + marginVal.charAt(1) + marginVal.charAt(0);
+                    }
+                    else {
+                        result2 = '1' + marginVal.charAt(2) + marginVal.charAt(1) + marginVal.charAt(0);
+                    }
+
+                }
+
+                if (marginVal.length == 3) {
+                    if (marginVal.includes('1')) {
+                        result2 = '2' + marginVal.charAt(1) + marginVal.charAt(0) + '0';
+                    }
+
+                    else {
+                        result2 = '1' + marginVal.charAt(1) + marginVal.charAt(0) + '0';
+                    }
+
+                }
+
+                console.log('Result 2 Code:', result2);
+                document.getElementById('result2').textContent = `Code: ${roundedPrice}${result2}`;
+            } else {
+                document.getElementById('result1').textContent = "Please enter a valid number.";
+                document.getElementById('result2').textContent = "";
+            }
+        });
     </script>
 </body>
 

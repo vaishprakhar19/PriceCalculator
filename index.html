@@ -65,13 +65,13 @@
 
             if (!isNaN(userInput)) {
                 // Multiply by 1.7
-                let price = parseFloat(userInput) * 1.8;
+                let price = parseFloat(userInput) * 1.7;
                 let roundedPrice = Math.round(price / 10) * 10;
                 console.log('Price (multiplied by 1.8):', roundedPrice);
                 document.getElementById('result1').textContent = `Price: ${roundedPrice.toFixed(2)}`; // Displaying rounded result with 2 decimal places
 
                 // Multiply by 2
-                let rawMarginVal = parseFloat(userInput) * 1.4;
+                let rawMarginVal = parseFloat(userInput) * 1.33;
                 let result2 = ""; // Placeholder for result2
                 let marginVal = (Math.round(rawMarginVal / 10) * 10).toString();
                 console.log('Raw Margin Value:', rawMarginVal);

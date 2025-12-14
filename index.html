@@ -1,152 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiply by Selected Factors</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Price Calculator App</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --result-bg: #1e1b4b; /* Dark Navy for contrast */
+            --result-text: #e0e7ff;
+            --success: #ffffff;
         }
 
-        label {
-            font-weight: bold;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            color: var(--text-dark);
+        }
+
+        .app-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* --- Header & Input Section --- */
+        .input-section {
+            padding: 2rem 1.5rem 1rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .currency-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
         }
 
         input[type="number"] {
-            width: 100px;
-            padding: 8px;
-            margin-right: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
+            width: 100%;
             border: none;
+            background: transparent;
+            font-size: 3.5rem; /* Huge text for easy reading */
+            font-weight: 800;
+            color: var(--text-dark);
+            text-align: center;
+            outline: none;
+            padding: 10px 0;
+            /* Hide arrows/spinners */
+            caret-color: transparent;
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"]::placeholder {
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .input-underline {
+            height: 4px;
+            width: 40px;
+            background: var(--primary);
+            margin: 0 auto 2rem;
+            border-radius: 2px;
+            opacity: 0.5;
+            transition: width 0.3s, opacity 0.3s;
+        }
+
+        input:focus + .input-underline {
+            width: 100px;
+            opacity: 1;
+        }
+
+        /* --- Controls / Toggles --- */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 1.5rem 2rem;
+        }
+
+        .control-card {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .control-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        /* Custom Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 30px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
             cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .status-badge {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
         }
 
-        button:hover {
-            background-color: #45a049;
+        /* --- Results Panel --- */
+        .result-panel {
+            background: var(--result-bg);
+            color: var(--result-text);
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            opacity: 0.5; /* Dimmed when inactive */
+            transition: opacity 0.3s;
+        }
+        
+        .result-panel.active {
+            opacity: 1;
         }
 
-        .result-container {
-            margin-top: 10px;
+        .result-box {
+            display: flex;
+            flex-direction: column;
         }
 
-        .result {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 5px;
+        .result-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
         }
 
-        .multiplier-options {
-            margin-top: 10px;
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
         }
 
-        input[type="checkbox"] {
-            margin-right: 5px;
+        .code-value {
+            font-family: 'Courier New', monospace;
+            color: var(--success);        /* Brighter neon green */
+            font-size: 2.2rem;     /* Much bigger size */
+            letter-spacing: -1.5px;
+            background: rgba(255, 255, 255, 0.1); /* Semi-transparent highlight box */
+            padding: 2px 12px;
+            border-radius: 8px;
         }
+
+        /* Navbar Styles */
+        .navbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            /* text-transform: uppercase; */
+            letter-spacing: 1px;
+            font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo-box {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .logo-icon {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
     </style>
 </head>
-
 <body>
-    <h2>Enter Buying Price of Item:</h2>
-    <form id="multiplyForm">
-        <label for="numberInput">Enter Price:</label>
-        <input type="number" id="numberInput" required>
-        <div class="multiplier-options">
-            <label hidden="true"><input type="checkbox" id="priceMultiplier1" value="1.7" checked> Default</label>
-            <label><input type="checkbox" id="priceMultiplier2" value="1.8"> Price</label>
-            <label hidden="true"><input type="checkbox" id="marginMultiplier1" value="1.33" checked> Default</label>
-            <label><input type="checkbox" id="marginMultiplier2" value="1.4"> Margin</label>
+<nav class="navbar">
+        <div class="brand">
+            <div class="logo-box">
+                <svg class="logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+            </div>
+            Fashion Corner
         </div>
-        <br>
-        <button type="submit">Calculate</button>
-    </form>
-    <div class="result-container">
-        <div class="result" id="result1"></div>
-        <div class="result" id="result2"></div>
+    </nav>
+    <div class="app-card">
+        
+        <div class="input-section">
+            <h2>Enter Price</h2>
+            <div class="currency-wrapper">
+                <input type="number" id="numberInput" placeholder="0" inputmode="decimal" autofocus>
+                <div class="input-underline"></div>
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-card">
+                <span class="control-label">Price Factor</span>
+                <label class="switch">
+                    <input type="checkbox" id="priceToggle">
+                    <span class="slider"></span>
+                </label>
+                <div id="priceText" class="status-badge">1.7</div>
+            </div>
+
+            <div class="control-card">
+                <span class="control-label">Margin Factor</span>
+                <label class="switch">
+                    <input type="checkbox" id="marginToggle">
+                    <span class="slider"></span>
+                </label>
+                <div id="marginText" class="status-badge">1.33</div>
+            </div>
+        </div>
+
+        <div class="result-panel" id="resultContainer">
+            <div class="result-box">
+                <span class="result-title">Selling Price</span>
+                <span class="result-value" id="resultPrice">0.00</span>
+            </div>
+            <div class="result-box" style="text-align: right;">
+                <span class="result-title">Code</span>
+                <span class="result-value code-value" id="resultCode">---</span>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // Ensure hidden checkbox toggles when displayed checkbox changes
-        document.getElementById('priceMultiplier2').addEventListener('change', function () {
-            document.getElementById('priceMultiplier1').checked = !this.checked;
-        });
+        // DOM Elements
+        const numberInput = document.getElementById('numberInput');
+        const priceToggle = document.getElementById('priceToggle');
+        const marginToggle = document.getElementById('marginToggle');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultPriceEl = document.getElementById('resultPrice');
+        const resultCodeEl = document.getElementById('resultCode');
+        const priceText = document.getElementById('priceText');
+        const marginText = document.getElementById('marginText');
 
-        document.getElementById('marginMultiplier2').addEventListener('change', function () {
-            document.getElementById('marginMultiplier1').checked = !this.checked;
-        });
+        // Logic Helpers
+        function hasRepeats(s) {
+            let seen = new Set();
+            for (let ch of s) {
+                if (seen.has(ch)) return true;
+                seen.add(ch);
+            }
+            return false;
+        }
 
-        document.getElementById('multiplyForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // prevent form submission
-            let userInput = document.getElementById('numberInput').value;
-            console.log('User Input:', userInput);
+        function calculate() {
+            // 1. Update Labels immediately
+            const priceMult = priceToggle.checked ? 1.8 : 1.7;
+            priceText.textContent = priceMult; // Simplified text for mobile
 
-            // Get selected price multiplier
-            let priceMultiplier = null;
-            if (document.getElementById('priceMultiplier1').checked) {
-                priceMultiplier = parseFloat(document.getElementById('priceMultiplier1').value);
-            } else if (document.getElementById('priceMultiplier2').checked) {
-                priceMultiplier = parseFloat(document.getElementById('priceMultiplier2').value);
+            const marginMult = marginToggle.checked ? 1.4 : 1.33;
+            marginText.textContent = marginMult; // Simplified text for mobile
+
+            // 2. Handle Empty Input
+            const userInput = numberInput.value;
+            if (userInput === '' || isNaN(userInput)) {
+                resultContainer.classList.remove('active');
+                resultPriceEl.textContent = "0.00";
+                resultCodeEl.textContent = "---";
+                return;
             }
 
-            // Get selected margin multiplier
-            let marginMultiplier = null;
-            if (document.getElementById('marginMultiplier1').checked) {
-                marginMultiplier = parseFloat(document.getElementById('marginMultiplier1').value);
-            } else if (document.getElementById('marginMultiplier2').checked) {
-                marginMultiplier = parseFloat(document.getElementById('marginMultiplier2').value);
+            // --- Calculation Logic ---
+            
+            // A. Price Calculation
+            let price = parseFloat(userInput) * priceMult;
+            let roundedPrice = Math.round(price / 10) * 10;
+            
+            // B. Code Calculation (Margin Logic)
+            let rawMarginVal = parseFloat(userInput) * marginMult;
+            let marginVal = (Math.round(rawMarginVal / 10) * 10).toString();
+
+            // Ensure unique digits loop
+            while (hasRepeats(marginVal)) {
+                marginVal = (parseInt(marginVal) + 10).toString();
             }
 
-            if (!isNaN(userInput) && priceMultiplier && marginMultiplier) {
-                // Multiply by selected price multiplier
-                let price = parseFloat(userInput) * priceMultiplier;
-                let roundedPrice = Math.round(price / 10) * 10;
-                console.log('Price (multiplied):', roundedPrice);
-                document.getElementById('result1').textContent = `Price: ${roundedPrice.toFixed(2)}`;
+            // Generate Code Structure
+            let code = '';
+            let centerDigits = '';
 
-                // Multiply by selected margin multiplier
-                let rawMarginVal = parseFloat(userInput) * marginMultiplier;
-                let result2 = ""; // Placeholder for result2
-                let marginVal = (Math.round(rawMarginVal / 10) * 10).toString();
-                console.log('Raw Margin Value:', rawMarginVal);
-                console.log('Margin Value:', marginVal);
-
-                if (marginVal.charAt(0) === marginVal.charAt(1) || marginVal.charAt(1) === marginVal.charAt(2)) {
-                    temp = parseFloat(marginVal) + 10;
-                    marginVal = temp.toString();
-                    console.log('Changed Margin Value:', marginVal);
-                }
-
-                if (marginVal.length === 4) {
-                    if (marginVal.includes('1')) {
-                        result2 = '2' + marginVal.charAt(2) + marginVal.charAt(1) + marginVal.charAt(0);
-                    } else {
-                        result2 = '1' + marginVal.charAt(2) + marginVal.charAt(1) + marginVal.charAt(0);
-                    }
-                }
-
-                if (marginVal.length === 3) {
-                    if (marginVal.includes('1')) {
-                        result2 = '2' + marginVal.charAt(1) + marginVal.charAt(0) + '0';
-                    } else {
-                        result2 = '1' + marginVal.charAt(1) + marginVal.charAt(0) + '0';
-                    }
-                }
-
-                console.log('Result 2 Code:', result2);
-                document.getElementById('result2').textContent = `Code: ${roundedPrice}${result2}`;
+            if (marginVal.length === 3) {
+                let mid = marginVal[1] + marginVal[0];
+                code = 'X' + mid + 'Y';
+                centerDigits = mid;
+            } else if (marginVal.length === 4) {
+                let reversed = marginVal.split('').reverse().join('');
+                centerDigits = reversed.slice(1, 4);
+                code = 'X' + centerDigits;
             } else {
-                document.getElementById('result1').textContent = "Please enter a valid number and select both multipliers.";
-                document.getElementById('result2').textContent = "";
+                code = 'X00Y';
+                centerDigits = '00';
             }
-        });
+
+            // Padding Logic
+            let used = new Set(centerDigits.split(''));
+
+            let padY = '0';
+            for (let d = 0; d <= 9; d++) {
+                if (!used.has(String(d))) {
+                    padY = String(d);
+                    used.add(padY);
+                    break;
+                }
+            }
+
+            let padX = '0';
+            for (let d = 0; d <= 9; d++) {
+                if (!used.has(String(d))) {
+                    padX = String(d);
+                    break;
+                }
+            }
+
+            let finalCodeSuffix = '';
+            if (marginVal.length === 4) {
+                finalCodeSuffix = padX + centerDigits;
+            } else {
+                finalCodeSuffix = padX + centerDigits + padY;
+            }
+
+            // Update UI
+            resultPriceEl.textContent = roundedPrice.toFixed(2);
+            resultCodeEl.textContent = `${roundedPrice}${finalCodeSuffix}`;
+            resultContainer.classList.add('active');
+        }
+
+        // Event Listeners
+        numberInput.addEventListener('input', calculate);
+        priceToggle.addEventListener('change', calculate);
+        marginToggle.addEventListener('change', calculate);
     </script>
 </body>
-
 </html>

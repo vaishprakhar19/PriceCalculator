@@ -24,12 +24,14 @@
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-gradient);
-            min-height: 100vh;
+            height: 100dvh;
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* Aligns card to top, not center */
             justify-content: center;
-            padding: 16px;
+            padding: 20px 16px 16px; /* Added top padding */
             color: var(--text-dark);
+            /* Ensure scrolling works if content is tall */
+            overflow-y: auto; 
         }
 
         .app-card {
@@ -46,7 +48,7 @@
 
         /* --- Header & Input Section --- */
         .input-section {
-            padding: 2rem 1.5rem 1rem;
+            padding: 1rem 1.5rem 0.5rem; /* Reduced padding */
             text-align: center;
         }
 
@@ -55,7 +57,7 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: var(--text-light);
-            margin-bottom: 1rem;
+            margin-bottom: 0.4rem;
             font-weight: 600;
         }
 
@@ -69,12 +71,12 @@
             width: 100%;
             border: none;
             background: transparent;
-            font-size: 3.5rem; /* Huge text for easy reading */
+            font-size: 3rem; /* Huge text for easy reading */
             font-weight: 800;
             color: var(--text-dark);
             text-align: center;
             outline: none;
-            padding: 10px 0;
+            padding: 1px 0;
             /* Hide arrows/spinners */
             caret-color: transparent;
             -moz-appearance: textfield;
@@ -93,7 +95,7 @@
             height: 4px;
             width: 40px;
             background: var(--primary);
-            margin: 0 auto 2rem;
+            margin: 0 auto 1rem;
             border-radius: 2px;
             opacity: 0.5;
             transition: width 0.3s, opacity 0.3s;
@@ -212,7 +214,7 @@
         .code-value {
             font-family: 'Courier New', monospace;
             color: var(--success);        /* Brighter neon green */
-            font-size: 2.2rem;     /* Much bigger size */
+            font-size: 1.5rem;
             letter-spacing: -1.5px;
             background: rgba(255, 255, 255, 0.1); /* Semi-transparent highlight box */
             padding: 2px 12px;
@@ -270,7 +272,7 @@
     </style>
 </head>
 <body>
-<nav class="navbar">
+<!-- <nav class="navbar">
         <div class="brand">
             <div class="logo-box">
                 <svg class="logo-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -279,9 +281,18 @@
             </div>
             Fashion Corner
         </div>
-    </nav>
+    </nav> -->
     <div class="app-card">
-        
+        <div class="result-panel" id="resultContainer">
+            <div class="result-box">
+                <span class="result-title">Selling Price</span>
+                <span class="result-value" id="resultPrice">0.00</span>
+            </div>
+            <div class="result-box" style="text-align: right;">
+                <span class="result-title">Code</span>
+                <span class="result-value code-value" id="resultCode">---</span>
+            </div>
+        </div>
         <div class="input-section">
             <h2>Enter Price</h2>
             <div class="currency-wrapper">
@@ -297,7 +308,7 @@
                     <input type="checkbox" id="priceToggle">
                     <span class="slider"></span>
                 </label>
-                <div id="priceText" class="status-badge">1.7</div>
+                <!-- <div id="priceText" class="status-badge">1.7</div> -->
             </div>
 
             <div class="control-card">
@@ -306,18 +317,7 @@
                     <input type="checkbox" id="marginToggle">
                     <span class="slider"></span>
                 </label>
-                <div id="marginText" class="status-badge">1.33</div>
-            </div>
-        </div>
-
-        <div class="result-panel" id="resultContainer">
-            <div class="result-box">
-                <span class="result-title">Selling Price</span>
-                <span class="result-value" id="resultPrice">0.00</span>
-            </div>
-            <div class="result-box" style="text-align: right;">
-                <span class="result-title">Code</span>
-                <span class="result-value code-value" id="resultCode">---</span>
+                <!-- <div id="marginText" class="status-badge">1.33</div> -->
             </div>
         </div>
 
@@ -345,12 +345,8 @@
         }
 
         function calculate() {
-            // 1. Update Labels immediately
             const priceMult = priceToggle.checked ? 1.8 : 1.7;
-            priceText.textContent = priceMult; // Simplified text for mobile
-
             const marginMult = marginToggle.checked ? 1.4 : 1.33;
-            marginText.textContent = marginMult; // Simplified text for mobile
 
             // 2. Handle Empty Input
             const userInput = numberInput.value;
